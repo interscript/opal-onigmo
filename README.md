@@ -1,8 +1,6 @@
 # Opal::Onigmo
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/opal/onigmo`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Execute regexps in Opal with a native Ruby regexp engine - Onigmo - compiled using clang to WebAssembly.
 
 ## Installation
 
@@ -22,7 +20,18 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+# In your Opal code
+
+require 'onigmo'
+r = Onigmo::Regexp.new("^ab+")
+Onigmo.gsub("abbbcd", r, "dd") # => "ddcd"
+Onigmo.match("test", r) # => false
+
+require 'onigmo/coreext'
+"abbbcd".gsub(r, "dd") # => "ddcd"
+"test".match(r) # => false
+```
 
 ## Development
 
