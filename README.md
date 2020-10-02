@@ -25,11 +25,10 @@ Or install it yourself as:
 
 require 'onigmo'
 r = Onigmo::Regexp.new("^ab+")
-Onigmo.gsub("abbbcd", r, "dd") # => "ddcd"
+"abbbcd".gsub(r, "dd") # => "ddcd"
 Onigmo.match("test", r) # => false
 
-require 'onigmo/coreext'
-"abbbcd".gsub(r, "dd") # => "ddcd"
+require 'onigmo/core_ext'
 "test".match(r) # => false
 ```
 
