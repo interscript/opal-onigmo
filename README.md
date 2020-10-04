@@ -26,7 +26,7 @@ Or install it yourself as:
 require 'onigmo'
 r = Onigmo::Regexp.new("^ab+")
 "abbbcd".gsub(r, "dd") # => "ddcd"
-Onigmo.match("test", r) # => false
+r.match("test") # => false
 
 require 'onigmo/core_ext'
 "test".match(r) # => false
