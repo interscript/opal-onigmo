@@ -2,13 +2,13 @@
 
 module Onigmo
   module Constants
-    <% 
-      File.read("Onigmo/onigmo.h")
-          .scan(/^#define\s+(\w+)\s+(\(?\s*[()<>0-9\w\t -]+)/)
-          .reject { |k,v| %w[
-            ONIG_NULL_WARN ONIG_SYNTAX_ ONIG_ENCODING_ ONIG_INFINITE_DISTANCE
-            ONIGENC_CASE_FOLD_DEFAULT ONIG_OPTION_DEFAULT].any? { |i| k.start_with? i } }
-          .each do |var, val|
+    <%
+      onigmo_h
+        .scan(/^#define\s+(\w+)\s+(\(?\s*[()<>0-9\w\t -]+)/)
+        .reject { |k,v| %w[
+          ONIG_NULL_WARN ONIG_SYNTAX_ ONIG_ENCODING_ ONIG_INFINITE_DISTANCE
+          ONIGENC_CASE_FOLD_DEFAULT ONIG_OPTION_DEFAULT].any? { |i| k.start_with? i } }
+        .each do |var, val|
     %>
     <%= var %> = <%= val.gsub(/U(<<|$)/,'\1') %><% end %>
     ONIG_OPTION_DEFAULT = ONIG_OPTION_NONE
