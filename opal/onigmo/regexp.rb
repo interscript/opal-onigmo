@@ -32,24 +32,26 @@ module Onigmo
       @pattern = pattern.encode("UTF-16LE")
       @options = options
 
-      out = Onigmo::FFI.context do
-        @ffi_regexpptr = Onigmo::FFI::RegexpPtr.new
+      out = nil
+      Onigmo::FFI.context do
+        ffi_regexpptr = Onigmo::FFI::RegexpPtr.new
         ffi_options = Onigmo::FFI::CompileInfo.default_compile_info
         ffi_errorinfo = Onigmo::FFI::ErrorInfo.cached
 
         ffi_pattern = Onigmo.buffer(@pattern)
         ffi_pattern_end = ffi_pattern + (@pattern.length * 2)
 
-        ffi_options.options = Onigmo::FFI::ONIG_OPTION_NONE
+        ffi_options.options  = Onigmo::FFI::ONIG_OPTION_NONE
         ffi_options.options |= Onigmo::FFI::ONIG_OPTION_IGNORECASE if options.include? "i"
         ffi_options.options |= Onigmo::FFI::ONIG_OPTION_MULTILINE if options.include? "m"
         ffi_options.options |= Onigmo::FFI::ONIG_OPTION_EXTEND if options.include? "x"
 
-        Onigmo::FFI.onig_new_deluxe(@ffi_regexpptr, ffi_pattern, ffi_pattern_end,
+        out = Onigmo::FFI.onig_new_deluxe(ffi_regexpptr, ffi_pattern, ffi_pattern_end,
                                     ffi_options, ffi_errorinfo)
-      end
 
-      @ffi_regexp = @ffi_regexpptr.value
+        @ffi_regexp = ffi_regexpptr.value
+        ffi_regexpptr.free
+      end
 
       @exec = proc { |re| js_exec(re) }
 
@@ -67,7 +69,7 @@ module Onigmo
 
       string = string.encode("UTF-16LE")
 
-      Onigmo::FFI.context do
+      out = Onigmo::FFI.context do
         ffi_string = Onigmo.buffer(string)
         ffi_string_end = ffi_string + (string.length * 2)
         ffi_string_offset = ffi_string + offset * 2
@@ -75,13 +77,19 @@ module Onigmo
         Onigmo::FFI.onig_search(@ffi_regexp, ffi_string, ffi_string_end, ffi_string_offset,
                                 ffi_string_end, @ffi_region, Onigmo::FFI::ONIG_OPTION_NONE)
       end
-    end
 
-    def ffi_region
-      @ffi_region[:num_regs].times.map do |i|
+      @region = @ffi_region[:num_regs].times.map do |i|
         [@ffi_region[:beg].get(:long, i*4),
          @ffi_region[:end].get(:long, i*4) ]
       end
+
+      Onigmo::FFI.onig_region_free(@ffi_region, 1)
+
+      out
+    end
+
+    def ffi_region
+      @region
     end
 
     def ffi_free

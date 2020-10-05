@@ -10,6 +10,7 @@ module Onigmo
     ffi_lib "onigmo/onigmo-wasm"
 
     class Regexp < ::FFI::Struct
+      # This is defined mostly for debugging purposes
       layout :p, :pointer,
              :used, :uint,
              :alloc, :uint,
@@ -108,10 +109,12 @@ module Onigmo
     end
 
     attach_function :onig_new_deluxe, [RegexpPtr, :pointer, :pointer, CompileInfo, ErrorInfo], :int
-    attach_function :onig_region_new, [], Region
     attach_function :onig_match, [Regexp, :pointer, :pointer, :pointer, Region, :uint], :int
     attach_function :onig_search, [Regexp, :pointer, :pointer, :pointer, :pointer, Region, :uint], :int
     attach_function :onig_free, [Regexp], :void
+
+    attach_function :onig_region_new, [], Region
+    attach_function :onig_region_free, [Region, :int], :void
   end
 
   Onigmo::FFI.library.memory.grow(128)
