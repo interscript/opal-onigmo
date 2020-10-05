@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require 'opal/repl'
+require 'opal/onigmo'
+
+Opal.append_paths '.'
+
+repl = Opal::REPL.new.run ARGV.first

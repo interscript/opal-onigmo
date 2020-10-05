@@ -94,7 +94,7 @@ module Onigmo
       @region
     end
 
-    def matches(str)
+    def matches
       @matches
     end
 
@@ -112,16 +112,16 @@ module Onigmo
     end
 
     def js_matches(str)
-      matches = matches(str)
+      ms = matches
       region = ffi_region
       out = {
         input: str,
         index: region[0][0]/2,
-        length: matches.length,
+        length: ms.length,
         slice: proc { |i| matches[i..-1] }
       }
       out = out.to_n
-      matches.each_with_index { |m,i| `out[#{i}] = #{m}` }
+      ms.each_with_index { |m,i| `out[#{i}] = #{m}` }
       @lastIndex = region[0][1]/2
       out
     end

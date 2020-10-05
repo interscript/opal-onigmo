@@ -20,8 +20,22 @@ RSpec.describe Onigmo::Regexp do
   end
 
   it "should support String#gsub" do
+    require 'onigmo/core_ext'
     re = Onigmo::Regexp.new('aa')
     expect('aababaaaabbaaaba'.gsub(re, 'ZZ')).to eq('ZZbabZZZZbbZZaba')
+  end
+
+  it "should support String#gsub with $ correctly" do
+    require 'onigmo/core_ext'
+    re = Onigmo::Regexp.new('$')
+    expect('lol'.gsub(re, '2')).to eq('lol2')
+  end
+
+  it "should support String#gsub with backparameters correctly" do
+    require 'onigmo/core_ext'
+    re = Onigmo::Regexp.new('(?<=te)(..)(?=st)')
+    expect('texxst'.gsub(re, '\1\1')).to eq('texxxxst')
+    expect('teyyst'.gsub(re) { "123" }).to eq('te123st')
   end
 
   it "should support String#sub" do
