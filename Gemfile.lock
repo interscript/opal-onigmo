@@ -4,12 +4,6 @@ PATH
     opal-onigmo (0.1.0)
       opal-webassembly
 
-PATH
-  remote: /Users/mulgogi/src/interscript/opal-webassembly
-  specs:
-    opal-webassembly (0.1.0)
-      opal
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -29,6 +23,8 @@ GEM
       opal (~> 1.0.0)
       sprockets (~> 3.7)
       tilt (>= 1.4)
+    opal-webassembly (0.1.0)
+      opal
     parser (2.7.1.5)
       ast (~> 2.4.1)
     pry (0.13.1)
@@ -61,7 +57,7 @@ DEPENDENCIES
   opal (~> 1.0)
   opal-onigmo!
   opal-rspec
-  opal-webassembly!
+  opal-webassembly
   pry
   rake (~> 12.0)
   rspec (~> 3.0)
