@@ -85,11 +85,17 @@ module Onigmo
 
       Onigmo::FFI.onig_region_free(@ffi_region, 1)
 
+      @matches = @region.map { |b,e| string[b/2...e/2] }
+
       out
     end
 
     def ffi_region
       @region
+    end
+
+    def matches(str)
+      @matches
     end
 
     def ffi_free
@@ -103,10 +109,6 @@ module Onigmo
       else
         out / 2
       end
-    end
-
-    def matches(str)
-      ffi_region.map { |b,e| str[b/2...e/2] }
     end
 
     def js_matches(str)
