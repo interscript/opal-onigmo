@@ -101,13 +101,17 @@ module Onigmo
       layout :enc, :pointer,
              :par, :pointer,
              :par_end, :pointer
+
+      def self.cached
+        @cached ||= new
+      end
     end
 
     attach_function :onig_new_deluxe, [RegexpPtr, :pointer, :pointer, CompileInfo, ErrorInfo], :int
     attach_function :onig_region_new, [], Region
     attach_function :onig_match, [Regexp, :pointer, :pointer, :pointer, Region, :uint], :int
     attach_function :onig_search, [Regexp, :pointer, :pointer, :pointer, :pointer, Region, :uint], :int
-
+    attach_function :onig_free, [Regexp], :void
   end
 
   Onigmo::FFI.library.memory.grow(128)

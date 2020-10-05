@@ -9,7 +9,7 @@ Opal::RSpec::RakeTask.new("spec-opal") do |server, task|
   require 'opal/onigmo'
 end
 
-task :generate => ['opal/onigmo/constants.rb', 'opal/onigmo/onigmo.wasm'] do
+task :generate => ['opal/onigmo/constants.rb', 'opal/onigmo/onigmo-wasm.wasm'] do
 end
 
 def render_template(template, output, vars)
@@ -28,8 +28,11 @@ file 'opal/onigmo/constants.rb' => ['opal/onigmo/constants.rb.erb', 'Onigmo/onig
   )
 end
 
-file 'opal/onigmo/onigmo.wasm' => ['Onigmo/build-wasm.sh'] do |task|
-  sh "cd Onigmo; sh ./build-wasm.sh; mv onigmo.wasm #{task.name}"
+file 'opal/onigmo/onigmo-wasm.wasm' => ['Onigmo/build-wasm.sh'] do |task|
+  if File.exist? __dir__+"/../../wasi-sdk-11.0/share/wasi-sysroot/"
+    env = "BUILD=wasi WASI_PATH=#{__dir__}/../../wasi-sdk-11.0/share/wasi-sysroot/"
+  end
+  sh "cd Onigmo; #{env} sh ./build-wasm.sh; mv onigmo.wasm ../opal/onigmo/onigmo-wasm.wasm"
 end
 
 task :default => [:spec, "spec-opal"]

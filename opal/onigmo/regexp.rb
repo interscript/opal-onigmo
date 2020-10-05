@@ -24,6 +24,10 @@ module Onigmo
     end
 
     def initialize pattern, options = ''
+      if pattern.is_a? Onigmo::Regexp
+        pattern = pattern.pattern
+      end
+
       @lastIndex = 0
       @pattern = pattern.encode("UTF-16LE")
       @options = options
@@ -31,9 +35,9 @@ module Onigmo
       out = Onigmo::FFI.context do
         @ffi_regexpptr = Onigmo::FFI::RegexpPtr.new
         ffi_options = Onigmo::FFI::CompileInfo.default_compile_info
-        ffi_errorinfo = Onigmo::FFI::ErrorInfo.new
+        ffi_errorinfo = Onigmo::FFI::ErrorInfo.cached
 
-        ffi_pattern = ::FFI::Pointer.from_string(@pattern)
+        ffi_pattern = Onigmo.buffer(@pattern)
         ffi_pattern_end = ffi_pattern + (@pattern.length * 2)
 
         ffi_options.options = Onigmo::FFI::ONIG_OPTION_NONE
@@ -54,6 +58,8 @@ module Onigmo
       end
     end
 
+    attr_accessor :pattern, :options
+
     def ffi_evaluate string, offset = 0
       offset ||= 0
 
@@ -62,7 +68,7 @@ module Onigmo
       string = string.encode("UTF-16LE")
 
       Onigmo::FFI.context do
-        ffi_string = ::FFI::Pointer.from_string(string)
+        ffi_string = Onigmo.buffer(string)
         ffi_string_end = ffi_string + (string.length * 2)
         ffi_string_offset = ffi_string + offset * 2
 
@@ -76,6 +82,10 @@ module Onigmo
         [@ffi_region[:beg].get(:long, i*4),
          @ffi_region[:end].get(:long, i*4) ]
       end
+    end
+
+    def ffi_free
+      Onigmo::FFI.onig_free(@ffi_regexp)
     end
 
     def evaluate string, offset = 0
@@ -113,6 +123,11 @@ module Onigmo
         @lastIndex = 0
         nil.to_n
       end
+    end
+
+    def reset
+      @lastIndex = 0
+      self
     end
   end
 end
