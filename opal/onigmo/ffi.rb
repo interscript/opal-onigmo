@@ -78,13 +78,15 @@ module Onigmo
 
       def self.default_compile_info
         @default ||= Onigmo::FFI.context do
+          casefold = Onigmo::FFI.library.exports[:OnigDefaultCaseFoldFlag]
+          casefold = casefold.value if casefold.respond_to? :value
           new.tap do |ci|
             ci[:num_of_elements] = 5
             ci[:pattern_enc] = Onigmo::FFI.library.exports[:OnigEncodingUTF_16LE]
             ci[:target_enc] = Onigmo::FFI.library.exports[:OnigEncodingUTF_16LE]
             ci[:syntax] = Onigmo::FFI.library.exports[:OnigSyntaxRuby]
             ci[:option] = Onigmo::FFI::ONIG_OPTION_NONE # To be overwritten
-            ci[:case_fold_flag] = Onigmo::FFI.library.exports[:OnigDefaultCaseFoldFlag].value
+            ci[:case_fold_flag] = casefold
           end
         end
       end
