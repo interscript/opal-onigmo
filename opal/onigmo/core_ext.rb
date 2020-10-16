@@ -22,6 +22,7 @@ class String
   alias gsub_before_onigmo gsub
   def gsub(from, to = undefined, &block)
     if Onigmo::Regexp === from
+      from.reset
       out = []
       index = 0
       loop do
@@ -70,5 +71,13 @@ class String
     else
       gsub_before_onigmo(from, to, &block)
     end
+  end
+
+  alias sub_before_onigmo sub
+  def sub(from, to = undefined, &block)
+    if Onigmo::Regexp === from
+      from.reset
+    end
+    sub_before_onigmo(from, to, &block)
   end
 end

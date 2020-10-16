@@ -7,11 +7,13 @@ module Onigmo
     `Opal.defineProperty(self.$$prototype, 'multiline', true)`
 
     def match(str, offset=nil, &block)
+      self.reset
       block ||= proc{|i| i}
       evaluate(str, offset) && block.(MatchData.new(self, js_matches(str)))
     end
 
     def match?(str, offset=nil)
+      self.reset
       !!evaluate(str, offset)
     end
 
